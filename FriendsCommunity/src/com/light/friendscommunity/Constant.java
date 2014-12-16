@@ -8,4 +8,6 @@ public class Constant {
 			Environment.getExternalStorageDirectory()+ "/bmp";
 	
 	
+	public static final int COMPRESS_IMAGE_FINISH = 0x000000;
+	
 }

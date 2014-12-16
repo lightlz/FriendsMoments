@@ -5,13 +5,19 @@ import java.io.File;
 
 import com.light.friendscommunity.BitmapConstant;
 import com.light.friendscommunity.Constant;
+import com.light.friendscommunity.ImageUtils;
 import com.light.friendscommunity.R;
+import com.light.friendscommunity.widget.MyGridView;
 import com.light.friendscommunity.widget.ViewHolder;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.provider.ContactsContract.CommonDataKinds.Contactables;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images.Media;
 import android.util.Log;
@@ -27,7 +33,7 @@ public class FriendsCommunity extends Fragment{
 
 	private View rootView;
 	
-	private GridView bitmapGv;
+	private MyGridView bitmapGv;
 	
 	private GridViewBitmapAdapter bitmapAdapter;
 	
@@ -38,6 +44,31 @@ public class FriendsCommunity extends Fragment{
 		initView();
 		super.onActivityCreated(savedInstanceState);
 	}
+	
+	
+	private Handler handler = new Handler(){
+
+		@Override
+		public void handleMessage(Message msg) {
+			// TODO Auto-generated method stub
+			switch(msg.what){
+			case Constant.COMPRESS_IMAGE_FINISH:
+				Bundle bd = new Bundle();
+				bd = msg.getData();
+				Bitmap bmp = (Bitmap) bd.get("bmp");
+				
+				if(bmp != null){
+					BitmapConstant.bmpList.add(bmp);
+					Log.v(TAG, BitmapConstant.bmpList.size() + "");
+					bitmapAdapter.notifyDataSetChanged();
+				}
+				
+				break;
+			}
+			super.handleMessage(msg);
+		}
+		
+	};
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,7 +85,7 @@ public class FriendsCommunity extends Fragment{
 	}
 
 	private void initView(){
-		bitmapGv = (GridView)rootView.findViewById(R.id.gv_community);
+		bitmapGv = (MyGridView)rootView.findViewById(R.id.gv_community);
 		bitmapAdapter = new GridViewBitmapAdapter();
 		bitmapGv.setAdapter(bitmapAdapter);
 		
@@ -95,7 +126,7 @@ public class FriendsCommunity extends Fragment{
 				img.setImageDrawable(getActivity().getResources()
 						.getDrawable(R.drawable.ic_diary_publish_add));
 			}else{
-				
+				img.setImageBitmap(BitmapConstant.bmpList.get(position));
 			}
 			
 			img.setOnLongClickListener(new OnLongClickListener() {
@@ -119,6 +150,9 @@ public class FriendsCommunity extends Fragment{
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
+		BitmapConstant.pathList.clear();
+		BitmapConstant.bmpList.clear();
+		
 		super.onDestroy();
 	}
 	
@@ -159,6 +193,8 @@ public class FriendsCommunity extends Fragment{
 					&& resultCode == getActivity().RESULT_OK){
 				BitmapConstant.pathList.add(BitmapConstant.BITMAP_PATH);
 				Log.v(TAG+" bitmap", BitmapConstant.BITMAP_PATH);
+				//进行压缩，然后显示
+				new Thread(new CompressImageThread(BitmapConstant.BITMAP_PATH)).start();
 			}
 			break;
 		}
@@ -167,5 +203,41 @@ public class FriendsCommunity extends Fragment{
 	}
 	
 	
+	/**
+	 * 
+	* @ClassName CompressImageThread 
+	* @Description TODO(compress bitmaps from camera) 
+	* @author lailiangzhong@long.tv
+	* @date 2014年12月16日
+	*
+	 */
+	class CompressImageThread extends Thread{
+
+		private String ImagePath;
+		
+		public CompressImageThread(String imagePath) {
+			super();
+			ImagePath = imagePath;
+		}
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			Bitmap bmp = null ;
+			//压缩图片
+			if(!ImagePath.equals("")){
+				bmp = ImageUtils.compressPixel(ImagePath, 240f, 480f);
+			}
+			
+			Message msg = new Message();
+			Bundle bd = new Bundle();
+			bd.putParcelable("bmp", bmp);
+			msg.what = Constant.COMPRESS_IMAGE_FINISH;
+			msg.setData(bd);
+			handler.sendMessage(msg);
+			
+			super.run();
+		}
+		
+	}
 
 }

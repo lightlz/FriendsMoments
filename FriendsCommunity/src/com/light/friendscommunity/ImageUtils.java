@@ -3,12 +3,13 @@ package com.light.friendscommunity;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 public class ImageUtils {
 	
 	/**
 	 * 
-	* @Description TODO(Get bitmap through image path  ) 
+	* @Description TODO(Get bitmap through image path) 
 	* @param @param imgPath
 	* @param @return   
 	* @return Bitmap  
@@ -33,7 +34,7 @@ public class ImageUtils {
 	* @param @return   
 	* @return Bitmap  
 	 */
-	public Bitmap compressPixel(String imgPath, float pixelW, float pixelH) {
+	public static Bitmap compressPixel(String imgPath, float pixelW, float pixelH) {
 		BitmapFactory.Options newOpts = new BitmapFactory.Options();  
         newOpts.inJustDecodeBounds = true;
         newOpts.inPreferredConfig = Config.RGB_565;
@@ -43,16 +44,24 @@ public class ImageUtils {
         int h = newOpts.outHeight;  
         float hh = pixelH;
 	    float ww = pixelW;
-        int be = 1;
-        if (w > h && w > ww) {
-            be = (int) (newOpts.outWidth / ww);  
-        } else if (w < h && h > hh) {
-            be = (int) (newOpts.outHeight / hh);  
-        }  
-        if (be <= 0) be = 1;  
-        newOpts.inSampleSize = be;
+        int inSampleSize = 1;
+        if (h > hh || w > ww) {
+            final int halfHeight = h / 2;
+            final int halfWidth = w / 2;
+            while ((halfHeight / inSampleSize) > hh
+              && (halfWidth / inSampleSize) > ww) {
+            	inSampleSize *= 2;
+            }
+        }
+        newOpts.inSampleSize = inSampleSize;
         bitmap = BitmapFactory.decodeFile(imgPath, newOpts);
-        return bitmap;
+        
+        Bitmap dst = Bitmap.createScaledBitmap(bitmap, (int)ww, (int)hh, false);
+        if (bitmap != dst) { 
+        	bitmap.recycle(); 
+        }
+
+        return dst;
 	}
 	
 

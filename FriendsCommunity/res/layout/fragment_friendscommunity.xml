@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
        
-    <GridView
+    <com.light.friendscommunity.widget.MyGridView
         android:id="@+id/gv_community" 
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
@@ -15,5 +15,6 @@
         android:scrollbars="none"
         android:gravity="center"
         android:stretchMode="columnWidth"  
-        ></GridView>
+        >
+        </com.light.friendscommunity.widget.MyGridView>
 </RelativeLayout>
