@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.light.friendscommunity.widget.SquareLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    
+    <ImageView 
+        android:id="@+id/item_gv_img_bitmap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="centerCrop"
+        />
+</com.light.friendscommunity.widget.SquareLayout>
