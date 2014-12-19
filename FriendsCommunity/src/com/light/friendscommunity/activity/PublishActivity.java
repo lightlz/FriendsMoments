@@ -1,5 +1,4 @@
-package com.light.friendscommunity.fragment;
-
+package com.light.friendscommunity.activity;
 
 import java.io.File;
 
@@ -10,41 +9,36 @@ import com.light.friendscommunity.R;
 import com.light.friendscommunity.widget.MyGridView;
 import com.light.friendscommunity.widget.ViewHolder;
 
-import android.app.Fragment;
+import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.ContactsContract.CommonDataKinds.Contactables;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Images.Media;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 
-public class FriendsCommunity extends Fragment{
+public class PublishActivity extends Activity{
 
-	private View rootView;
-	
 	private MyGridView bitmapGv;
 	
 	private GridViewBitmapAdapter bitmapAdapter;
 	
-	private static final String TAG = "FriendsCommunity : ";
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		initView();
-		super.onActivityCreated(savedInstanceState);
-	}
+	private ActionBar actionBar;
 	
+	private static final String TAG = "PublishActivity : ";
 	
 	private Handler handler = new Handler(){
 
@@ -69,28 +63,47 @@ public class FriendsCommunity extends Fragment{
 		}
 		
 	};
-
+	
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		if(rootView==null){
-            rootView=inflater.inflate(R.layout.fragment_friendscommunity, null);
-	    }
-	    ViewGroup parent = (ViewGroup) rootView.getParent();
-	    if (parent != null) {
-	        parent.removeView(rootView);
-	    }
-		return rootView;
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_publish);
+		initView();
 	}
-
+	
+	
 	private void initView(){
-		bitmapGv = (MyGridView)rootView.findViewById(R.id.gv_community);
+		
+		actionBar = getActionBar();
+		actionBar.show();
+		actionBar.setDisplayHomeAsUpEnabled(true); 
+		actionBar.setTitle("Moments");
+		actionBar.setDisplayShowHomeEnabled(false);
+		
+		bitmapGv = (MyGridView)findViewById(R.id.gv_community);
 		bitmapAdapter = new GridViewBitmapAdapter();
 		bitmapGv.setAdapter(bitmapAdapter);
-		
-		
 	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.menu_friends_community, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		return super.onOptionsItemSelected(item);
+	}
+
+	
 	
 	class GridViewBitmapAdapter extends BaseAdapter{
 
@@ -116,14 +129,14 @@ public class FriendsCommunity extends Fragment{
 		public View getView(int position, View convertView, ViewGroup parent) {
 			// TODO Auto-generated method stub
 			if(convertView == null){
-				convertView = LayoutInflater.from(getActivity()).
+				convertView = LayoutInflater.from(PublishActivity.this).
 						inflate(R.layout.item_gv_community, null);
 			}
 			
 			ImageView img = ViewHolder.get(convertView, R.id.item_gv_img_bitmap);
 			
 			if(position == BitmapConstant.bmpList.size()){
-				img.setImageDrawable(getActivity().getResources()
+				img.setImageDrawable(PublishActivity.this.getResources()
 						.getDrawable(R.drawable.ic_diary_publish_add));
 			}else{
 				img.setImageBitmap(BitmapConstant.bmpList.get(position));
@@ -134,12 +147,22 @@ public class FriendsCommunity extends Fragment{
 				@Override
 				public boolean onLongClick(View v) {
 					// TODO Auto-generated method stub
-					openCamera();
+					if(BitmapConstant.bmpList.size()<BitmapConstant.PICTURE_MAX){
+						openCamera();
+					}
 					return true;
 				}
 			});
+			img.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					startActivity(new Intent(PublishActivity.this,PhotoSelectedActivity.class));
+				}
+			});
 			
-			return convertView;
+			return convertView; 
 		}
 		
 	}
@@ -190,7 +213,7 @@ public class FriendsCommunity extends Fragment{
 		case BitmapConstant.TAKE_PICTURE:
 			 
 			if(BitmapConstant.pathList.size()<BitmapConstant.PICTURE_MAX
-					&& resultCode == getActivity().RESULT_OK){
+					&& resultCode == this.RESULT_OK){
 				BitmapConstant.pathList.add(BitmapConstant.BITMAP_PATH);
 				Log.v(TAG+" bitmap", BitmapConstant.BITMAP_PATH);
 				//进行压缩，然后显示
@@ -239,5 +262,6 @@ public class FriendsCommunity extends Fragment{
 		}
 		
 	}
+
 
 }

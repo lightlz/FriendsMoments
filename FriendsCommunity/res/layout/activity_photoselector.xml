@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    
+    <GridView 
+        android:id="@+id/gv_frg_photoselect"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:horizontalSpacing="2dp"
+        android:verticalSpacing="2dp"
+        android:numColumns="4"
+        android:stretchMode="columnWidth"
+	    android:listSelector="@android:color/transparent"
+	    android:scrollbars="none"
+	    android:fadingEdge="none"
+	    android:fadingEdgeLength="0dp"
+        ></GridView>
+    
+ </RelativeLayout>
