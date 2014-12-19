@@ -18,4 +18,36 @@
 	    android:fadingEdgeLength="0dp"
         ></GridView>
     
+    <LinearLayout 
+        android:id="@+id/layout_photosele_album"
+        android:layout_height="48dp"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:background="#404040"
+        android:orientation="horizontal"
+        android:gravity="center"
+        >
+        
+           <TextView 
+            android:id="@+id/tv_photosele_album"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="camera"
+            android:textColor="@android:color/white"
+            android:layout_gravity="center"
+            android:textSize="18sp"
+            />
+         <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="∧"
+            android:textSize="20sp"
+            android:textColor="@android:color/white"
+            android:layout_gravity="center"
+            android:layout_marginLeft="8dp"
+            />
+     
+        
+    </LinearLayout>
+    
  </RelativeLayout>
