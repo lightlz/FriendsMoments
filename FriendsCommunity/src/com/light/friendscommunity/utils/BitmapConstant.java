@@ -1,4 +1,4 @@
-package com.light.friendscommunity;
+package com.light.friendscommunity.utils;
 
 import java.util.ArrayList;
 import java.util.List;

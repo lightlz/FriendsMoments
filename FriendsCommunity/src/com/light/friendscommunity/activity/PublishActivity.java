@@ -2,10 +2,10 @@ package com.light.friendscommunity.activity;
 
 import java.io.File;
 
-import com.light.friendscommunity.BitmapConstant;
-import com.light.friendscommunity.Constant;
-import com.light.friendscommunity.ImageUtils;
 import com.light.friendscommunity.R;
+import com.light.friendscommunity.utils.BitmapConstant;
+import com.light.friendscommunity.utils.Constant;
+import com.light.friendscommunity.utils.ImageUtils;
 import com.light.friendscommunity.widget.MyGridView;
 import com.light.friendscommunity.widget.ViewHolder;
 

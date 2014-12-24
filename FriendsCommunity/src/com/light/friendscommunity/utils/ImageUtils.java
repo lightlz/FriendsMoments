@@ -1,4 +1,4 @@
-package com.light.friendscommunity;
+package com.light.friendscommunity.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
