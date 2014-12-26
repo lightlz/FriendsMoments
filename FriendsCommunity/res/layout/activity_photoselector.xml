@@ -2,10 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/relativeLayout"
     >
     
     <GridView 
-        android:id="@+id/gv_frg_photoselect"
+        android:id="@+id/gv_act_photoselect"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:horizontalSpacing="2dp"
@@ -32,19 +33,20 @@
             android:id="@+id/tv_photosele_album"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="camera"
+            android:text=" Camera"
             android:textColor="@android:color/white"
-            android:layout_gravity="center"
+            android:gravity="center"
             android:textSize="18sp"
+            android:layout_weight="2"
             />
          <TextView 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="∧"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textColor="@android:color/white"
-            android:layout_gravity="center"
-            android:layout_marginLeft="8dp"
+            android:gravity="center"
+            android:layout_weight="1"
             />
      
         
