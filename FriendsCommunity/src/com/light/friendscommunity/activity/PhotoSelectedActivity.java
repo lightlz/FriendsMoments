@@ -1,6 +1,10 @@
 package com.light.friendscommunity.activity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.light.friendscommunity.R;
+import com.light.friendscommunity.bean.ThumbnailImageBean;
 import com.light.friendscommunity.utils.ThumbnailUtil;
 import com.light.friendscommunity.widget.ViewHolder;
 
@@ -23,6 +27,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -52,6 +58,9 @@ public class PhotoSelectedActivity extends Activity implements OnClickListener{
 	private ThumbnailUtil thumbUtil;
 	
 	private TextView ablumNameTv;
+	
+	private GridView imageGv;
+	
 	
 	private Handler handler = new Handler(){
 
@@ -91,6 +100,8 @@ public class PhotoSelectedActivity extends Activity implements OnClickListener{
 		ablumSelectLayout.setOnClickListener(this);
 		
 		ablumNameTv = (TextView)findViewById(R.id.tv_photosele_album);
+		
+		imageGv = (GridView)findViewById(R.id.gv_act_photoselect);
 		
 		
 		new Thread(new GetDataThread()).start();
@@ -165,6 +176,7 @@ public class PhotoSelectedActivity extends Activity implements OnClickListener{
 	}
 	
 	
+	/**图片数据加载*/
 	class GetDataThread extends Thread{
 
 		@Override
@@ -181,9 +193,15 @@ public class PhotoSelectedActivity extends Activity implements OnClickListener{
 		
 	}
 	
+	/**
+	 * 
+	* @ClassName ListViewAdapter 
+	* @Description TODO(相簿名称选择的listview) 
+	* @date 2014年12月26日
+	*
+	 */
 	class ListViewAdapter extends BaseAdapter{
 
-		
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
@@ -220,6 +238,59 @@ public class PhotoSelectedActivity extends Activity implements OnClickListener{
 			
 			return convertView;
 		}
+	}
+	
+	
+	class ImageGridViewAdapter extends BaseAdapter{
+
+		private int albumIndex = 0;
+		
+		private List<ThumbnailImageBean> imageList;
+		
+		public ImageGridViewAdapter(int albumIndex) {
+			super();
+			this.albumIndex = albumIndex;
+			//获取到同个相册下图片list
+			imageList = thumbUtil.list.get(albumIndex).getList();
+		}
+
+		@Override
+		public int getCount() {
+			// TODO Auto-generated method stub
+			return imageList.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			// TODO Auto-generated method stub
+			return imageList.get(position);
+		}
+
+		@Override
+		public long getItemId(int position) {
+			// TODO Auto-generated method stub
+			return position;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			// TODO Auto-generated method stub
+			if(convertView==null){
+				convertView = LayoutInflater.from(PhotoSelectedActivity.this)
+						.inflate(R.layout.item_gv_photo_selected, null);
+			}
+			
+			ImageView img = ViewHolder.get(convertView, R.id.item_gv_img_selected);
+			
+			//用原图图片的id找到对应的缩略图path
+			String dispPath = thumbUtil.getDisplayPath(
+					imageList.get(position).getImageId(),imageList.get(position).getDisplayPath());
+			
+			
+			
+			return null;
+		}
 		
 	}
+	
 }

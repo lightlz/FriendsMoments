@@ -130,7 +130,7 @@ public class PublishActivity extends Activity{
 			// TODO Auto-generated method stub
 			if(convertView == null){
 				convertView = LayoutInflater.from(PublishActivity.this).
-						inflate(R.layout.item_gv_community, null);
+						inflate(R.layout.item_gv_image, null);
 			}
 			
 			ImageView img = ViewHolder.get(convertView, R.id.item_gv_img_bitmap);

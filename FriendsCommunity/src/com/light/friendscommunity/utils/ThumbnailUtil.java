@@ -22,11 +22,10 @@ public class ThumbnailUtil {
 	/** 保存缩略图的path，key为imageId */
 	public  static HashMap<Integer,String> hash = new HashMap<Integer, String>();
 	
-	private Context context;
-	
 	/**保存相簿列表*/
 	public static List<AlbumsBean> list = new ArrayList<AlbumsBean>();
 	
+	private Context context;
 
 	public ThumbnailUtil(Context context) {
 		super();
@@ -36,6 +35,11 @@ public class ThumbnailUtil {
 		
 	}
 
+	public String getDisplayPath(int key,String defultPath){
+		if(hash == null || !hash.containsKey(key)) return defultPath;
+		return hash.get(key);
+		
+	}
 
 	/**
 	 * 
@@ -131,5 +135,7 @@ public class ThumbnailUtil {
 		return list;
 	}
 
+	
+	
 	
 }
