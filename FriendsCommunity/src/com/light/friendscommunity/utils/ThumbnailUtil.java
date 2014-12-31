@@ -27,6 +27,7 @@ public class ThumbnailUtil {
 	
 	private Context context;
 
+	
 	public ThumbnailUtil(Context context) {
 		super();
 		this.context = context;
@@ -34,7 +35,7 @@ public class ThumbnailUtil {
 		cr = context.getContentResolver();
 		
 	}
-
+  
 	public String getDisplayPath(int key,String defultPath){
 		if(hash == null || !hash.containsKey(key)) return defultPath;
 		return hash.get(key);
@@ -135,7 +136,14 @@ public class ThumbnailUtil {
 		return list;
 	}
 
-	
+	public static void clear(){
+		if(!hash.isEmpty()){
+			hash.clear();
+		}
+		if(!list.isEmpty()){
+			list.clear();
+		}
+	}
 	
 	
 }

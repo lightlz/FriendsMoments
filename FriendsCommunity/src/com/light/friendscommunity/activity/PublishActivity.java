@@ -6,6 +6,7 @@ import com.light.friendscommunity.R;
 import com.light.friendscommunity.utils.BitmapConstant;
 import com.light.friendscommunity.utils.Constant;
 import com.light.friendscommunity.utils.ImageUtils;
+import com.light.friendscommunity.utils.ThumbnailUtil;
 import com.light.friendscommunity.widget.MyGridView;
 import com.light.friendscommunity.widget.ViewHolder;
 
@@ -175,7 +176,7 @@ public class PublishActivity extends Activity{
 		// TODO Auto-generated method stub
 		BitmapConstant.pathList.clear();
 		BitmapConstant.bmpList.clear();
-		
+		ThumbnailUtil.clear();
 		super.onDestroy();
 	}
 	
