@@ -7,11 +7,19 @@ import com.light.friendscommunity.R;
 import com.light.friendscommunity.bean.ThumbnailImageBean;
 import com.light.friendscommunity.utils.ThumbnailUtil;
 import com.light.friendscommunity.widget.ViewHolder;
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
 import android.R.color;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,6 +34,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -61,6 +71,9 @@ public class PhotoSelectedActivity extends Activity implements OnClickListener{
 	
 	private GridView imageGv;
 	
+	protected ImageLoader imageLoader = ImageLoader.getInstance();
+	protected DisplayImageOptions imageOptionsDefaultPicBlack;
+	ImageGridViewAdapter gvAdapter;
 	
 	private Handler handler = new Handler(){
 
@@ -72,6 +85,8 @@ public class PhotoSelectedActivity extends Activity implements OnClickListener{
 			switch(msg.what){
 			case DATATHREAD_FINISH:
 				ablumNameTv.setText(thumbUtil.list.get(0).getAlbumName()+"");
+				gvAdapter = new ImageGridViewAdapter(0);
+				imageGv.setAdapter(gvAdapter);
 				break;
 			}
 		}
@@ -103,6 +118,7 @@ public class PhotoSelectedActivity extends Activity implements OnClickListener{
 		
 		imageGv = (GridView)findViewById(R.id.gv_act_photoselect);
 		
+		initImageOptions();
 		
 		new Thread(new GetDataThread()).start();
 	}
@@ -161,7 +177,7 @@ public class PhotoSelectedActivity extends Activity implements OnClickListener{
 		 int h = getWindowManager().getDefaultDisplay().getHeight();  
 	     int w = getWindowManager().getDefaultDisplay().getWidth(); 
 	     
-		 PopupWindow pw = new PopupWindow(contentView);
+		 final PopupWindow pw = new PopupWindow(contentView);
 		 pw.setHeight(h/3);
 		 pw.setWidth(w);
 		 pw.setOutsideTouchable(false);
@@ -171,6 +187,19 @@ public class PhotoSelectedActivity extends Activity implements OnClickListener{
 		 ListView lv = (ListView)contentView.findViewById(R.id.lv_ablum_seleted);
 		 ListViewAdapter adapter = new ListViewAdapter();
 		 lv.setAdapter(adapter);
+		 
+		 lv.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				// TODO Auto-generated method stub
+				gvAdapter.setAlbumIndex(position);
+				Log.v("position", "  "+position);
+				gvAdapter.notifyDataSetChanged();
+				pw.dismiss();
+			}
+		});
 		 
 		 pw.showAtLocation(layout, Gravity.BOTTOM, 0,ablumSelectLayout.getHeight());
 	}
@@ -243,15 +272,27 @@ public class PhotoSelectedActivity extends Activity implements OnClickListener{
 	
 	class ImageGridViewAdapter extends BaseAdapter{
 
-		private int albumIndex = 0;
+		private int albumIndex ;
 		
 		private List<ThumbnailImageBean> imageList;
 		
+		
+		public int getAlbumIndex() {
+			return albumIndex;
+		}
+
+		public void setAlbumIndex(int albumIndex) {
+			this.albumIndex = albumIndex;
+			imageList = thumbUtil.list.get(albumIndex).getList();
+		}
+
 		public ImageGridViewAdapter(int albumIndex) {
 			super();
 			this.albumIndex = albumIndex;
 			//获取到同个相册下图片list
-			imageList = thumbUtil.list.get(albumIndex).getList();
+			if(albumIndex != -1){
+				imageList = thumbUtil.list.get(albumIndex).getList();
+			}
 		}
 
 		@Override
@@ -285,12 +326,42 @@ public class PhotoSelectedActivity extends Activity implements OnClickListener{
 			//用原图图片的id找到对应的缩略图path
 			String dispPath = thumbUtil.getDisplayPath(
 					imageList.get(position).getImageId(),imageList.get(position).getDisplayPath());
+			//显示图片
+			Log.v("dispPath : 	", " "+dispPath);
+			imageLoader.displayImage(dispPath, img,imageOptionsDefaultPicBlack);
 			
-			
-			
-			return null;
+			return convertView;
 		}
 		
 	}
+	
+	private void initImageOptions(){
+		
+		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
+	        .memoryCacheExtraOptions(480, 800) // default = device screen dimensions
+	        .diskCacheExtraOptions(480, 800, null)
+	        .denyCacheImageMultipleSizesInMemory()
+	        .memoryCache(new LruMemoryCache(2 * 1024 * 1024))
+	        .memoryCacheSize(2 * 1024 * 1024)
+	        .diskCacheSize(50 * 1024 * 1024)
+	        .diskCacheFileCount(100)
+	        .threadPoolSize(10)
+	        .writeDebugLogs()
+	        .build();
+	
+		imageOptionsDefaultPicBlack = new DisplayImageOptions.Builder()
+	        .showImageOnLoading(R.drawable.shape_img_default) // resource or drawable
+	        .showImageForEmptyUri(R.drawable.shape_img_default) // resource or drawable
+	        .showImageOnFail(R.drawable.shape_img_default) // resource or drawable
+	        .cacheInMemory(true) 
+	        .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2) // default
+	        .bitmapConfig(Bitmap.Config.RGB_565)
+	        .displayer(new SimpleBitmapDisplayer())
+	        .build();// default
+		
+		imageLoader.init(config);
+	}
+	
+
 	
 }
