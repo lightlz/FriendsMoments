@@ -11,7 +11,10 @@ import com.light.friendscommunity.bean.ThumbnailImageBean;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.provider.MediaStore;
+import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Images.Thumbnails;
 
 
@@ -145,5 +148,42 @@ public class ThumbnailUtil {
 		}
 	}
 	
+	
+	 /** 
+     *  
+     * @param context 
+     * @param cr
+     * @param Imagepath 
+     * @return 
+     */
+    public Bitmap getImageThumbnail(String Imagepath) { 
+            ContentResolver testcr = context.getContentResolver(); 
+            String[] projection = { MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID, }; 
+            String whereClause = MediaStore.Images.Media.DATA + " = '" + Imagepath + "'"; 
+            Cursor cursor = testcr.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, whereClause, 
+                            null, null); 
+            int _id = 0; 
+            String imagePath = ""; 
+            if (cursor == null || cursor.getCount() == 0) { 
+                    return null; 
+            } 
+            if (cursor.moveToFirst()) { 
+
+                    int _idColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID); 
+                    int _dataColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATA); 
+
+                    do { 
+                            _id = cursor.getInt(_idColumn); 
+                            imagePath = cursor.getString(_dataColumn); 
+                    } while (cursor.moveToNext()); 
+            } 
+            cursor.close();
+            BitmapFactory.Options options = new BitmapFactory.Options(); 
+            options.inDither = false; 
+            options.inPreferredConfig = Bitmap.Config.RGB_565; 
+            Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(cr, _id, Images.Thumbnails.MINI_KIND, 
+                            options); 
+            return bitmap; 
+    }
 	
 }

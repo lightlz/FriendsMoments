@@ -1,6 +1,10 @@
 package com.light.friendscommunity.activity;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import com.light.friendscommunity.R;
 import com.light.friendscommunity.utils.BitmapConstant;
@@ -249,7 +253,26 @@ public class PublishActivity extends Activity{
 			Bitmap bmp = null ;
 			//压缩图片
 			if(!ImagePath.equals("")){
-				bmp = ImageUtils.compressPixel(ImagePath, 240f, 480f);
+				//bmp = ImageUtils.compressPixel(ImagePath, 240f, 480f);
+				bmp = ImageUtils.compressPixel1(ImagePath, 1280f, 1280f);
+				File myCaptureFile = new File( "/storage/sdcard0/", "aest.jpg");
+		        BufferedOutputStream bos;
+				try {
+					bos = new BufferedOutputStream(new FileOutputStream(myCaptureFile));
+					bmp.compress(Bitmap.CompressFormat.JPEG, 80, bos);
+					Log.v("aaa", "aaaaaaaaaaaaaaa");
+				    try {
+						bos.flush();
+						bos.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		       
 			}
 			
 			Message msg = new Message();

@@ -64,7 +64,46 @@ public class ImageUtils {
         return dst;
 	}
 	
+	public static Bitmap compressPixel1(String imgPath, float pixelW, float pixelH) {
+		BitmapFactory.Options newOpts = new BitmapFactory.Options();  
+        newOpts.inJustDecodeBounds = true;
+        newOpts.inPreferredConfig = Config.RGB_565;
+        Bitmap bitmap = BitmapFactory.decodeFile(imgPath,newOpts);
+        newOpts.inJustDecodeBounds = false;  
+        int w = newOpts.outWidth;  
+        int h = newOpts.outHeight;  
+        float hh = pixelH;
+	    float ww = pixelW;
+	    int height = h;
+	    int width = w;
+        int inSampleSize = 1;
+        if (h > hh || w > ww) {
+            final int halfHeight = h / 2;
+            final int halfWidth = w / 2;
+            while ((halfHeight / inSampleSize) > hh
+              && (halfWidth / inSampleSize) > ww) {
+            	inSampleSize *= 2;
+            }
+            
+            if(h>w){
+            	height = 1280;
+            	width = (1280*w)/h;
+            }else{
+            	width = 1280;
+            	height = (1280*h)/w;
+            }
+        }
+        newOpts.inSampleSize = inSampleSize;
+        bitmap = BitmapFactory.decodeFile(imgPath, newOpts);
+        	
+        Bitmap dst = Bitmap.createScaledBitmap(bitmap, width, height, false);
+        if (bitmap != dst) { 
+        	bitmap.recycle(); 
+        }
 
+        return dst;
+	}
+	
 
 }
 

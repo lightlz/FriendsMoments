@@ -1,18 +1,17 @@
 package com.light.friendscommunity.activity;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.light.friendscommunity.R;
 import com.light.friendscommunity.bean.ThumbnailImageBean;
+import com.light.friendscommunity.utils.BitmapCache;
+import com.light.friendscommunity.utils.BitmapCache.ImageCallback;
+import com.light.friendscommunity.utils.StringUtil;
 import com.light.friendscommunity.utils.ThumbnailUtil;
 import com.light.friendscommunity.widget.ViewHolder;
-import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
 import android.R.color;
 import android.app.ActionBar;
@@ -71,10 +70,9 @@ public class PhotoSelectedActivity extends Activity implements OnClickListener{
 	
 	private GridView imageGv;
 	
-	protected ImageLoader imageLoader = ImageLoader.getInstance();
-	protected DisplayImageOptions imageOptionsDefaultPicBlack;
 	ImageGridViewAdapter gvAdapter;
 	
+	BitmapCache bmpCache;
 	private Handler handler = new Handler(){
 
 		@Override
@@ -118,7 +116,7 @@ public class PhotoSelectedActivity extends Activity implements OnClickListener{
 		
 		imageGv = (GridView)findViewById(R.id.gv_act_photoselect);
 		
-		initImageOptions();
+		bmpCache = new BitmapCache();
 		
 		new Thread(new GetDataThread()).start();
 	}
@@ -289,12 +287,31 @@ public class PhotoSelectedActivity extends Activity implements OnClickListener{
 		public ImageGridViewAdapter(int albumIndex) {
 			super();
 			this.albumIndex = albumIndex;
+			
 			//获取到同个相册下图片list
 			if(albumIndex != -1){
 				imageList = thumbUtil.list.get(albumIndex).getList();
 			}
 		}
 
+		ImageCallback callback = new ImageCallback() {
+			
+			@Override
+			public void imageLoad(ImageView img,Bitmap bitmap, Object... params) {
+				// TODO Auto-generated method stub
+				if(img != null && bitmap != null){
+					String path = (String) params[0];
+					//if( path.equals((String)img.getTag())){
+						img.setImageBitmap(bitmap);
+					//}else{
+					//	Log.v("ImageCallback : ", "tap error!");
+					//}
+				}else{
+					Log.v("ImageCallback : ", "img is null || bitmap is null");
+				}
+			}
+		};
+		
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
@@ -326,42 +343,31 @@ public class PhotoSelectedActivity extends Activity implements OnClickListener{
 			//用原图图片的id找到对应的缩略图path
 			String dispPath = thumbUtil.getDisplayPath(
 					imageList.get(position).getImageId(),imageList.get(position).getDisplayPath());
+			String absolutePath = imageList.get(position).getAbsolutePath();
 			//显示图片
-			Log.v("dispPath : 	", " "+dispPath);
-			imageLoader.displayImage(dispPath, img,imageOptionsDefaultPicBlack);
+			Log.v("dispPath : 	", " "+dispPath.substring(8));
+			Log.v("absolutePath :", imageList.get(position).getAbsolutePath());
+			if(!StringUtil.isEmpty(dispPath) && !StringUtil.isEmpty(absolutePath)){
+				bmpCache.display(img,dispPath.substring(8), absolutePath, callback);
+			}	
 			
 			return convertView;
 		}
 		
 	}
 	
-	private void initImageOptions(){
-		
-		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
-	        .memoryCacheExtraOptions(480, 800) // default = device screen dimensions
-	        .diskCacheExtraOptions(480, 800, null)
-	        .denyCacheImageMultipleSizesInMemory()
-	        .memoryCache(new LruMemoryCache(2 * 1024 * 1024))
-	        .memoryCacheSize(2 * 1024 * 1024)
-	        .diskCacheSize(50 * 1024 * 1024)
-	        .diskCacheFileCount(100)
-	        .threadPoolSize(10)
-	        .writeDebugLogs()
-	        .build();
+	public boolean fileIsExists(String path){
+        try{
+                File f=new File(path);
+                if(!f.exists()){
+                        return false;
+                }
+        }catch (Exception e) {
+                // TODO: handle exception
+                return false;
+        }
+        return true;
+}
 	
-		imageOptionsDefaultPicBlack = new DisplayImageOptions.Builder()
-	        .showImageOnLoading(R.drawable.shape_img_default) // resource or drawable
-	        .showImageForEmptyUri(R.drawable.shape_img_default) // resource or drawable
-	        .showImageOnFail(R.drawable.shape_img_default) // resource or drawable
-	        .cacheInMemory(true) 
-	        .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2) // default
-	        .bitmapConfig(Bitmap.Config.RGB_565)
-	        .displayer(new SimpleBitmapDisplayer())
-	        .build();// default
-		
-		imageLoader.init(config);
-	}
-	
-
 	
 }
