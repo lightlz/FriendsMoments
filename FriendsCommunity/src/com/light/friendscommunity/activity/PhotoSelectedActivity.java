@@ -182,7 +182,7 @@ public class PhotoSelectedActivity extends Activity implements OnClickListener{
 		 pw.setFocusable(true);
 		 pw.setBackgroundDrawable(new BitmapDrawable()); 
 		 
-		 ListView lv = (ListView)contentView.findViewById(R.id.lv_ablum_seleted);
+		 final ListView lv = (ListView)contentView.findViewById(R.id.lv_ablum_seleted);
 		 ListViewAdapter adapter = new ListViewAdapter();
 		 lv.setAdapter(adapter);
 		 
@@ -301,11 +301,7 @@ public class PhotoSelectedActivity extends Activity implements OnClickListener{
 				// TODO Auto-generated method stub
 				if(img != null && bitmap != null){
 					String path = (String) params[0];
-					//if( path.equals((String)img.getTag())){
-						img.setImageBitmap(bitmap);
-					//}else{
-					//	Log.v("ImageCallback : ", "tap error!");
-					//}
+					img.setImageBitmap(bitmap);
 				}else{
 					Log.v("ImageCallback : ", "img is null || bitmap is null");
 				}
@@ -341,33 +337,20 @@ public class PhotoSelectedActivity extends Activity implements OnClickListener{
 			ImageView img = ViewHolder.get(convertView, R.id.item_gv_img_selected);
 			
 			//用原图图片的id找到对应的缩略图path
+			//String dispPath = imageList.get(position).getDisplayPath();
 			String dispPath = thumbUtil.getDisplayPath(
-					imageList.get(position).getImageId(),imageList.get(position).getDisplayPath());
+					imageList.get(position).getImageId(),"");
 			String absolutePath = imageList.get(position).getAbsolutePath();
 			//显示图片
-			Log.v("dispPath : 	", " "+dispPath.substring(8));
-			Log.v("absolutePath :", imageList.get(position).getAbsolutePath());
-			if(!StringUtil.isEmpty(dispPath) && !StringUtil.isEmpty(absolutePath)){
-				bmpCache.display(img,dispPath.substring(8), absolutePath, callback);
+			Log.v("dispPath 1: 	", " "+dispPath);
+			Log.v("absolutePath 2:", imageList.get(position).getAbsolutePath());
+			if(!StringUtil.isEmpty(dispPath) || !StringUtil.isEmpty(absolutePath)){
+				bmpCache.display(img,dispPath, absolutePath, callback);
 			}	
 			
 			return convertView;
 		}
 		
 	}
-	
-	public boolean fileIsExists(String path){
-        try{
-                File f=new File(path);
-                if(!f.exists()){
-                        return false;
-                }
-        }catch (Exception e) {
-                // TODO: handle exception
-                return false;
-        }
-        return true;
-}
-	
 	
 }

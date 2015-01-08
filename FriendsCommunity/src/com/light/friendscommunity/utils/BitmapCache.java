@@ -7,9 +7,11 @@ import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
 
+import android.R.dimen;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.ImageView;
 
 public class BitmapCache {
@@ -51,14 +53,19 @@ public class BitmapCache {
 		}
 		
 		if(hash.containsKey(path)){
+			Log.v("aaaaa", "aaa");
 			SoftReference<Bitmap> sr = hash.get(path);
 			Bitmap bmp = sr.get();
-			if(bmp != null&&callback != null){
-				callback.imageLoad(img,bmp, path);
+			if(bmp != null){
+				if(callback!=null){
+					callback.imageLoad(img,bmp, absolutePath);
+				}
+				img.setImageBitmap(bmp);
+				return;
 			}
-		}else{
-			new Thread(new DealImageThread(path, hasThumPath, callback,img)).start();
 		}
+		new Thread(new DealImageThread(dispPath,absolutePath, hasThumPath, callback,img)).start();
+		
 	}
 	
 	class DealImageThread extends Thread{
@@ -71,12 +78,14 @@ public class BitmapCache {
 		
 		private ImageView img;
 		
+		private String absolutePath;
 		Bitmap bmp;
 		
-		public DealImageThread(String path, boolean isThumbnail,
+		public DealImageThread(String path,String absolutePath, boolean isThumbnail,
 				ImageCallback callback,ImageView img) {
 			super();
 			this.path = path;
+			this.absolutePath = absolutePath;
 			this.isThumbnail = isThumbnail;
 			this.callback = callback;
 			this.img = img;
@@ -90,7 +99,8 @@ public class BitmapCache {
 				if(bmp == null){
 					//bmp = ImageUtils.compressPixel(path, 256f, 256f);
 					try {
-						bmp = revitionImageSize(path);
+						bmp = revitionImageSize(absolutePath);
+						path = absolutePath;
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -99,7 +109,9 @@ public class BitmapCache {
 			}else{
 				//bmp = ImageUtils.compressPixel(path, 256f, 256f);
 				try {
-					bmp = revitionImageSize(path);
+					bmp = revitionImageSize(absolutePath);
+					Log.v("tip  : ","no thumbnail");
+					path = absolutePath;
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -107,13 +119,14 @@ public class BitmapCache {
 			}
 			
 			if(bmp != null){
+				Log.v("tip  : ","no bmp");
 				put(path,bmp);
 				if(callback != null){
 					handler.post(new Runnable() {
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
-							callback.imageLoad(img,bmp, path);
+							callback.imageLoad(img,bmp, absolutePath);
 						}
 					});
 				}

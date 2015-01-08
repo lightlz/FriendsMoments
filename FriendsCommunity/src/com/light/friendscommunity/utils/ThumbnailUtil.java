@@ -64,7 +64,7 @@ public class ThumbnailUtil {
 			do {
 				imageId = cur.getInt(imageIdColumn);
 				imagePath = cur.getString(dataColumn);
-				hash.put(imageId, "file://"+imagePath);
+				hash.put(imageId, imagePath);
 			} while (cur.moveToNext());
 		}
 	}
@@ -108,7 +108,7 @@ public class ThumbnailUtil {
 				
 				thumbnailBean.setImageId(imgId);
 				thumbnailBean.setAbsolutePath(imgPath);
-				thumbnailBean.setDisplayPath("file://"+imgPath);
+				thumbnailBean.setDisplayPath(imgPath);
 				
 				//判断当前是否已经保存有这个相册的名称
 				if(albumsMap.containsKey(imgAlbumName)){
@@ -128,7 +128,7 @@ public class ThumbnailUtil {
 					albusBean.setAbsolutePath(imgPath);
 					albusBean.setAlbumName(imgAlbumName);
 					albusBean.setImageId(imgId);
-					albusBean.setDisplayPath("file://"+imgPath);
+					albusBean.setDisplayPath(imgPath);
 					albusBean.setList(thumbnailList);
 					albumsMap.put(imgAlbumName, albusBean);
 					list.add(albusBean);
