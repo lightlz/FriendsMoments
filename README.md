@@ -14,7 +14,7 @@ FriendsMoments
 
 @Image :
 
- ![image](https://github.com/lightlz/FriendsMoments/tree/master/Image/device-2015-02-06-103734.png)
+ ![image](https://raw.githubusercontent.com/lightlz/FriendsMoments/master/Image/device-2015-02-06-103734.png)
  
  
  ![image](https://github.com/lightlz/FriendsMoments/tree/master/Image/device-2015-02-06-103912.png)
